@@ -10,8 +10,26 @@ import { getAllProducts } from "../axios/products";
 import { useSelector } from "react-redux";
 function Cart() {
   const [total, setTotal] = useState(0);
-  const [products, setProducts] = useState([]);
   const cart = useSelector((state) => state.cart);
+
+  const getTotal = () => {
+    let totalPrice = 0;
+    cart.forEach((item) => {
+      totalPrice += item.taloPriceWithTaxAndRecharge * item.quantity;
+    });
+
+    return `${totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
+
+  useEffect(() => {
+    let totalQuantity = 0;
+
+    cart.forEach((item) => {
+      totalQuantity += item.quantity;
+    });
+
+    setTotal(totalQuantity);
+  }, [cart]);
 
   return (
     <div>
@@ -53,7 +71,7 @@ function Cart() {
                     $
                   </Grid>
                   <Grid item xs={4} md={4}>
-                    120.00
+                    {getTotal()}
                   </Grid>
                 </Grid>
               </Typography>
@@ -77,7 +95,7 @@ function Cart() {
                     $
                   </Grid>
                   <Grid item xs={4} md={4} style={{ fontWeight: 700 }}>
-                    120.00
+                    {getTotal()}
                   </Grid>
                 </Grid>
               </Typography>

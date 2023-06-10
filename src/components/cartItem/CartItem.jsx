@@ -102,6 +102,8 @@ function CartItem({ product }) {
                       width: "100%",
                       fontWeight: "600",
                       fontSize: 10,
+                      cursor: "pointer",
+                      color: "red",
                     }}
                     onClick={() => dispatch(removeItem(product.id))}
                   >
@@ -154,7 +156,7 @@ function CartItem({ product }) {
                         style={{ fontWeight: "600", fontSize: 7 }}
                       >
                         $
-                        {product.taloPrice
+                        {product.taloPriceWithTaxAndRecharge
                           .toString()
                           .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
                       </Typography>
