@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CartItem from "../components/cartItem/CartItem";
-import { getAllProducts } from "../axios/products";
+import Navbar from "../components/navbar/Navbar";
 import { useSelector } from "react-redux";
 function Cart() {
   const [total, setTotal] = useState(0);
@@ -33,6 +33,7 @@ function Cart() {
 
   return (
     <div>
+      <Navbar />
       <h1 style={{ textAlign: "left" }}>Carrito de compra ({total})</h1>
       <Grid
         container
