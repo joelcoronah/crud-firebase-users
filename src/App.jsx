@@ -2,12 +2,12 @@ import "./App.css";
 
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/login/Login";
-// import SignUp from "./pages/SignUp";
 import List from "./pages/List";
-import Home from "./pages/Home";
 import { AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import SignUp from "./pages/signup/SignUp";
+import ProductList from "./pages/ProductList";
+import Cart from "./pages/Cart";
 
 function App() {
   const { currentUser, token } = useContext(AuthContext);
@@ -34,27 +34,9 @@ function App() {
               }
             />
           </Route>
-          <Route path="users">
-            {/* <Route
-              index
-              element={
-                // <RequireAuth>
-                <List />
-                // </RequireAuth>
-              }
-            /> */}
-            {/* <Route
-                path=":userId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={<New inputs={userInputs} title="Add New User" />}
-              /> */}
+          <Route path="products">
+            <Route index element={<ProductList />} />
+            <Route path="cart" element={<Cart />} />
           </Route>
         </Routes>
       </BrowserRouter>
