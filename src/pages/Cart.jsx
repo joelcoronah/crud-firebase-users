@@ -7,24 +7,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import CartItem from "../components/cartItem/CartItem";
 import { getAllProducts } from "../axios/products";
+import { useSelector } from "react-redux";
 function Cart() {
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    getAllProducts()
-      .then((res) => {
-        console.log("products", { res });
-        // setUsers(res.data.data.items);
-
-        const data = res.data.hits.slice(0, 4);
-        setProducts(data);
-        setTotal(data.length);
-      })
-      .catch((error) => {
-        console.error({ error });
-      });
-  }, []);
+  const cart = useSelector((state) => state.cart);
 
   return (
     <div>
@@ -37,7 +24,7 @@ function Cart() {
         alignItems="top"
       >
         <Grid item xs={6} md={8}>
-          {products.map((product) => (
+          {cart?.map((product) => (
             <CartItem product={product} key={product.id} />
           ))}
         </Grid>

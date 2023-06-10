@@ -3,18 +3,19 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import {
-  CardMedia,
-  Grid,
-  Icon,
-  IconButton,
-  Input,
-  TextField,
-} from "@mui/material";
+import { CardMedia, Grid, IconButton, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeItem,
+} from "../../redux/cartSlice";
+import { useDispatch } from "react-redux";
 
 function CartItem({ product }) {
+  const dispatch = useDispatch();
+
   return (
     <div>
       <Card
@@ -102,6 +103,7 @@ function CartItem({ product }) {
                       fontWeight: "600",
                       fontSize: 10,
                     }}
+                    onClick={() => dispatch(removeItem(product.id))}
                   >
                     Eliminar
                   </Typography>
@@ -173,9 +175,10 @@ function CartItem({ product }) {
                           borderRadius: 50,
                           backgroundColor: "purple",
                         }}
+                        onClick={() => dispatch(decrementQuantity(product.id))}
                         size="small"
                       >
-                        <AddIcon
+                        <RemoveIcon
                           style={{
                             color: "white",
                             maxWidth: "10px",
@@ -193,6 +196,7 @@ function CartItem({ product }) {
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        value={product.quantity}
                         variant="standard"
                       />
                     </Grid>
@@ -201,8 +205,9 @@ function CartItem({ product }) {
                         variant="contained"
                         style={{ borderRadius: 50, backgroundColor: "purple" }}
                         size="small"
+                        onClick={() => dispatch(incrementQuantity(product.id))}
                       >
-                        <RemoveIcon
+                        <AddIcon
                           style={{
                             color: "white",
                             maxWidth: "10px",

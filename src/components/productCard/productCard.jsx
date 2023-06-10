@@ -4,8 +4,12 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { addToCart } from "../../redux/cartSlice";
+import { useDispatch } from "react-redux";
 
 function ProductCard({ product }) {
+  const dispatch = useDispatch();
+
   return (
     <Card sx={{ maxWidth: 250, margin: 1, backgroundColor: "#f8f8f8" }}>
       <CardContent
@@ -78,6 +82,7 @@ function ProductCard({ product }) {
             backgroundColor: "rgb(20 188 173)",
             fontWeight: 400,
           }}
+          onClick={() => dispatch(addToCart(product))}
         >
           Ver detalle del producto
         </Button>

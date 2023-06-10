@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `https://meiliqa.talo.cl/indexes/maestra/search?q=`;
+const API_URL = import.meta.env.VITE_MEILISEARCH_SERVER_URL || "";
 
 const instance = axios.create({
   baseURL: API_URL,
