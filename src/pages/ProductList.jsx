@@ -4,6 +4,7 @@ import { getAllProducts } from "../axios/products";
 
 import ProductCard from "../components/productCard/productCard";
 import Grid from "@mui/material/Grid";
+import Navbar from "../components/navbar/Navbar";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
@@ -22,6 +23,8 @@ function ProductList() {
 
   return (
     <Grid container spacing={1}>
+      <Navbar />
+
       {products.map((product) => (
         <Grid item xs={3} key={product.id}>
           <ProductCard key={product.id} product={product} />
