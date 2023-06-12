@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Alert, Grid, Snackbar } from "@mui/material";
 import { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 function Cart() {
   const [total, setTotal] = useState(0);
   const cart = useSelector((state) => state.cart);
+  const [open, setOpen] = useState(false);
 
   const getTotal = () => {
     let totalPrice = 0;
@@ -31,10 +32,30 @@ function Cart() {
     setTotal(totalQuantity);
   }, [cart]);
 
+  const handleClick = () => {
+    setOpen(true);
+    console.log("eliminado");
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
-    <div>
+    <>
       <Navbar />
-      <h1 style={{ textAlign: "left" }}>Carrito de compra ({total})</h1>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Product deleted successfully!
+        </Alert>
+      </Snackbar>
+      <Typography variant="h6" component="h2" style={{ textAlign: "left" }}>
+        Carrito de compra ({total})
+      </Typography>
       <Grid
         container
         spacing={2}
@@ -44,7 +65,11 @@ function Cart() {
       >
         <Grid item xs={6} md={8}>
           {cart?.map((product) => (
-            <CartItem product={product} key={product.id} />
+            <CartItem
+              product={product}
+              key={product.id}
+              handleClick={handleClick}
+            />
           ))}
         </Grid>
         <Grid item xs={6} md={4}>
@@ -125,7 +150,7 @@ function Cart() {
           </Card>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 }
 

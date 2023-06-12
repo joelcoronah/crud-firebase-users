@@ -6,12 +6,32 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { addToCart } from "../../redux/cartSlice";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { Alert, Snackbar } from "@mui/material";
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   return (
     <Card sx={{ maxWidth: 250, margin: 1, backgroundColor: "#f8f8f8" }}>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Product added to cart!
+        </Alert>
+      </Snackbar>
       <CardContent
         style={{
           display: "flex",
@@ -82,7 +102,10 @@ function ProductCard({ product }) {
             backgroundColor: "rgb(20 188 173)",
             fontWeight: 400,
           }}
-          onClick={() => dispatch(addToCart(product))}
+          onClick={() => {
+            handleClick();
+            dispatch(addToCart(product));
+          }}
         >
           Ver detalle del producto
         </Button>

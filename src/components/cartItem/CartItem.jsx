@@ -1,7 +1,14 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { CardMedia, Grid, IconButton, TextField } from "@mui/material";
+import {
+  Alert,
+  CardMedia,
+  Grid,
+  IconButton,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -10,8 +17,9 @@ import {
   removeItem,
 } from "../../redux/cartSlice";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
 
-function CartItem({ product }) {
+function CartItem({ product, handleClick }) {
   const dispatch = useDispatch();
 
   return (
@@ -103,7 +111,10 @@ function CartItem({ product }) {
                       cursor: "pointer",
                       color: "red",
                     }}
-                    onClick={() => dispatch(removeItem(product.id))}
+                    onClick={() => {
+                      handleClick();
+                      dispatch(removeItem(product.id));
+                    }}
                   >
                     Eliminar
                   </Typography>
@@ -205,7 +216,9 @@ function CartItem({ product }) {
                         variant="contained"
                         style={{ borderRadius: 50, backgroundColor: "purple" }}
                         size="small"
-                        onClick={() => dispatch(incrementQuantity(product.id))}
+                        onClick={() => {
+                          dispatch(incrementQuantity(product.id));
+                        }}
                       >
                         <AddIcon
                           style={{
