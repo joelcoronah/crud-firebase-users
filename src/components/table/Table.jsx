@@ -1,10 +1,10 @@
-import { Button, Stack } from "@mui/material";
+import { Alert, Button, IconButton, Snackbar, Stack } from "@mui/material";
 import "./table.scss";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { getAllUsers, deleteUser, EditUser } from "../../axios/user";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -13,8 +13,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { registerRequest } from "../../axios/auth";
+import CloseIcon from "@mui/icons-material/Close";
+
 const TableUsers = () => {
-  const [users, setUsers] = useState([]);
   const [user, setUser] = useState([]);
 
   const [open, setOpen] = useState(false);
@@ -34,16 +35,47 @@ const TableUsers = () => {
     },
   ];
 
+  const [page, setPage] = useState(0);
+  const [error, setError] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+  });
+  const [pageSize, setPageSize] = useState(5);
+  const [rowCount, setRowCount] = useState(0);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [message, setMessage] = useState("Notification");
+  const [severity, setSeverity] = useState("success");
+
   useEffect(() => {
-    getAllUsers()
-      .then((res) => {
-        console.log("users", { res });
-        setUsers(res.data.data.items);
-      })
-      .catch((error) => {
-        console.error({ error });
-      });
-  }, []);
+    let active = true;
+
+    (async () => {
+      setLoading(true);
+      getAllUsers(page + 1, pageSize)
+        .then((res) => {
+          console.log("users", { res });
+          setRows(res.data.data.items);
+          setRowCount(res.data.data.count);
+        })
+        .catch((error) => {
+          console.error({ error });
+        });
+
+      if (!active) {
+        return;
+      }
+
+      setLoading(false);
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [page, pageSize]);
 
   const onButtonClick = (e, row, title) => {
     e.stopPropagation();
@@ -86,6 +118,12 @@ const TableUsers = () => {
   const handleClose = () => {
     setOpen(false);
     setOpenDelete(false);
+    setError({
+      firstName: false,
+      email: false,
+      lastName: false,
+      password: false,
+    });
   };
 
   const confirmDelete = () => {
@@ -95,9 +133,12 @@ const TableUsers = () => {
         getAllUsers()
           .then((res) => {
             console.log("users", { res });
-            setUsers(res.data.data.items);
+            setRows(res.data.data.items);
+            setRowCount(res.data.data.count);
+            handleClickSnackBar("Deleted User Successfully", "success");
           })
           .catch((error) => {
+            handleClickSnackBar("Delete Error, try again", "error");
             console.error({ error });
           });
       })
@@ -108,15 +149,30 @@ const TableUsers = () => {
     setOpenDelete(false);
   };
 
-  const confirmEdit = () => {
+  const confirmEdit = (e) => {
+    e.preventDefault();
+
+    if (user.firstName === "" || user.lastName === "") {
+      Object.keys(user).forEach((key) => {
+        if (user[key] === "") {
+          setError({ ...error, [key]: true });
+        }
+      });
+      handleClickSnackBar("Error, please fill the fields", "error");
+      return;
+    }
+
     EditUser(user.id, user)
       .then((res) => {
         getAllUsers()
           .then((res) => {
             console.log("users", { res });
-            setUsers(res.data.data.items);
+            setRows(res.data.data.items);
+            setRowCount(res.data.data.count);
+            handleClickSnackBar("Updated User Successfully", "success");
           })
           .catch((error) => {
+            handleClickSnackBar("Update Error, try again", "error");
             console.error({ error });
           });
       })
@@ -126,23 +182,78 @@ const TableUsers = () => {
     setOpen(false);
   };
 
-  const saveUser = () => {
+  const saveUser = (e) => {
+    e.preventDefault();
+
+    if (
+      user.email === "" ||
+      user.password === "" ||
+      user.firstName === "" ||
+      user.lastName === ""
+    ) {
+      Object.keys(user).forEach((key) => {
+        if (user[key] === "") {
+          setError({ ...error, [key]: true });
+        }
+      });
+      handleClickSnackBar("Error, please fill the fields", "error");
+      return;
+    }
+
     registerRequest(user)
       .then((res) => {
         getAllUsers()
           .then((res) => {
             console.log("users", { res });
-            setUsers(res.data.data.items);
+            setRows(res.data.data.items);
+            setRowCount(res.data.data.count);
+            handleClickSnackBar("Created User Successfully", "success");
           })
           .catch((error) => {
+            handleClickSnackBar("Create Error, try again", "error");
             console.error({ error });
           });
+        setOpen(false);
       })
       .catch((error) => {
         console.error({ error });
       });
-    setOpen(false);
   };
+
+  const handlePaginationChange = (params, e) => {
+    setPage(params.page);
+    setPageSize(params.pageSize);
+  };
+
+  const handleClickSnackBar = (message, severity) => {
+    setOpenSnackBar(true);
+    setMessage(message);
+    setSeverity(severity);
+  };
+
+  const handleCloseSnackBar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
+
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleCloseSnackBar}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   return (
     <div style={{ height: 400, width: "100%" }}>
@@ -177,6 +288,8 @@ const TableUsers = () => {
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <TextField
+            error={error.firstName}
+            required
             autoFocus
             margin="dense"
             id="firstName"
@@ -188,6 +301,8 @@ const TableUsers = () => {
             onChange={(e) => setUser({ ...user, firstName: e.target.value })}
           />
           <TextField
+            error={error.lastName}
+            required
             autoFocus
             margin="dense"
             id="lastName"
@@ -201,7 +316,9 @@ const TableUsers = () => {
           {!edit && (
             <>
               <TextField
+                error={error.email}
                 autoFocus
+                required
                 margin="dense"
                 id="email"
                 label="Email"
@@ -213,7 +330,9 @@ const TableUsers = () => {
               />
               <TextField
                 autoFocus
+                error={error.password}
                 margin="dense"
+                required
                 id="password"
                 label="Password"
                 type="password"
@@ -251,9 +370,35 @@ const TableUsers = () => {
           Create User
         </Button>
       </div>
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        severity={severity}
+        action={action}
+      >
+        <Alert
+          onClose={handleCloseSnackBar}
+          severity={severity}
+          sx={{ width: "100%" }}
+        >
+          {message}
+        </Alert>
+      </Snackbar>
 
       <DataGrid
-        rows={users}
+        slots={{ toolbar: GridToolbar }}
+        autoHeight
+        rows={rows}
+        pagination={true}
+        pageSize={5}
+        pageSizeOptions={[5, 10, 20]}
+        paginationModel={{ page, pageSize }}
+        onPaginationModelChange={handlePaginationChange}
+        rowCount={rowCount || 0}
+        paginationMode="server"
+        onPageChange={(newPage) => setPage(newPage)}
+        loading={loading}
         columns={[
           ...columns,
           {
@@ -283,12 +428,6 @@ const TableUsers = () => {
             },
           },
         ]}
-        initialState={{
-          pagination: {
-            paginationModel: { pemail: 0, pemailSize: 5 },
-          },
-        }}
-        pemailSizeOptions={[1, 5, 10]}
       />
     </div>
   );

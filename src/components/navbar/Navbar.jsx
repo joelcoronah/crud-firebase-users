@@ -139,32 +139,28 @@ function ResponsiveAppBar() {
             <Button
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
+              component={Link}
+              to={"/"}
             >
-              <Link to="/" className="link" style={{ color: "white" }}>
-                Users
-              </Link>
+              Users
             </Button>
 
             <Button
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
+              component={Link}
+              to={"/products"}
             >
-              <Link to="/products" className="link" style={{ color: "white" }}>
-                Products
-              </Link>
+              Products
             </Button>
 
             <Button
               onClick={handleCloseNavMenu}
               sx={{ my: 2, color: "white", display: "block" }}
+              component={Link}
+              to={"/products/cart"}
             >
-              <Link
-                to="/products/cart"
-                className="link"
-                style={{ color: "white" }}
-              >
-                Show Cart
-              </Link>
+              Show Cart
             </Button>
           </Box>
 
